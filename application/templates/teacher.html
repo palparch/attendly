@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Teacher dashboard · Attendly{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">TEACHER PORTAL</p>
+        <h1>Class attendance</h1>
+        <p class="muted">Register and review attendance for your students.</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('students.register_student') }}">＋ Register student</a>
+</div>
+
+<section class="panel">
+    <form method="get" class="toolbar">
+        <label>Date
+            <input type="date" name="date" value="{{ selected_date }}" required>
+        </label>
+        <label>Subject
+            <input name="subject" value="{{ subject }}" required>
+        </label>
+        <button type="submit">Load</button>
+    </form>
+</section>
+
+<div class="stats">
+    <div class="stat"><span>Students</span><strong>{{ students|length }}</strong></div>
+    <div class="stat"><span>Below 75%</span><strong>{{ students|selectattr('flag')|list|length }}</strong></div>
+    <div class="stat"><span>Repeated absences</span><strong>{{ students|selectattr('repeated')|list|length }}</strong></div>
+</div>
+
+<section class="panel">
+    <h2>Student register</h2>
+    {% if students %}
+    <div class="table-wrap">
+    <table>
+        <thead><tr>
+            <th>Student</th><th>Roll no.</th><th>Class</th>
+            <th>Attendance</th><th>Recent absences*</th><th>Mark for {{ selected_date }}</th>
+        </tr></thead>
+        <tbody>
+        {% for item in students %}
+            {% set student = item.student %}
+            <tr>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.roll_number }}</td>
+                <td>{{ student.class_name }}</td>
+                <td>
+                    {% if item.summary.total %}
+                        <strong class="{% if item.flag %}danger-text{% endif %}">{{ item.summary.percentage }}%</strong>
+                        <small>{{ item.summary.present }}/{{ item.summary.total }} classes</small>
+                    {% else %}<span class="muted">No records</span>{% endif %}
+                    {% if item.flag %}<span class="tag danger">Below 75%</span>{% endif %}
+                    {% if item.repeated %}<span class="tag warning">Frequent absence</span>{% endif %}
+                </td>
+                <td>{{ item.summary.recent_absences }} / last 10 records</td>
+                <td>
+                    <form class="mark-form" method="post" action="{{ url_for('attendance.mark_attendance', student_id=student.id) }}">
+                        <input type="hidden" name="attendance_date" value="{{ selected_date }}">
+                        <input type="hidden" name="subject" value="{{ subject }}">
+                        <select name="status" aria-label="Attendance status for {{ student.full_name }}">
+                            <option value="Present" {% if marked.get(student.id) == 'Present' %}selected{% endif %}>Present</option>
+                            <option value="Absent" {% if marked.get(student.id) == 'Absent' %}selected{% endif %}>Absent</option>
+                        </select>
+                        <button class="small-button" type="submit">Save</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <p class="muted small">*Recent absences counts absent records among the student's latest 10 recorded class sessions for this subject. Attendance percentages are based on records entered so far.</p>
+    {% else %}
+        <p class="muted">No students registered yet. Use “Register student” to add the first student.</p>
+    {% endif %}
+</section>
+{% endblock %}

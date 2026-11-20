@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Register student · Attendly{% endblock %}
+{% block content %}
+<section class="panel narrow">
+    <a class="back" href="{{ url_for('attendance.teacher_dashboard') }}">← Dashboard</a>
+    <h1>Register a student</h1>
+	<form method="post" enctype="multipart/form-data">
+
+    	<label>Full name
+        	<input name="full_name" required>
+    	</label>
+
+    	<label>Roll number
+	        <input name="roll_number" required>
+    	</label>
+
+    	<label>Class / section
+        	<input name="class_name" required>
+    	</label>
+
+    	<label>Student username
+        	<input name="username" required>
+    	</label>
+
+    	<label>Password
+        	<input type="password" name="password"
+               minlength="8" required>
+    	</label>
+
+	    <hr>
+
+	    <h2>Face enrollment (optional)</h2>
+
+    	<label>Reference photographs (up to 5)
+        	<input
+            	type="file"
+            	name="photos"
+            	accept="image/jpeg,image/png"
+            	multiple
+        	>
+    	</label>
+
+    	<label>
+        	<input type="checkbox" name="photo_consent" value="yes">
+        	I confirm that the required school and student/parent or guardian permissions have been obtained.
+    	</label>
+
+    	<button type="submit">Register student</button>
+
+	</form>
+
+</section>
+{% endblock %}

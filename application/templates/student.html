@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My attendance · Attendly{% endblock %}
+{% block content %}
+<p class="eyebrow">STUDENT PORTAL</p>
+<h1>Hello, {{ student.full_name }}</h1>
+<p class="muted">Roll number: {{ student.roll_number }} · Class: {{ student.class_name }}</p>
+
+<div class="stats">
+    <div class="stat"><span>Overall attendance</span><strong>{{ summary.percentage }}%</strong></div>
+    <div class="stat"><span>Present</span><strong>{{ summary.present }}</strong></div>
+    <div class="stat"><span>Absent</span><strong>{{ summary.absent }}</strong></div>
+</div>
+
+<section class="panel">
+    <h2>Subject-wise attendance</h2>
+    {% if subject_summaries %}
+    <div class="table-wrap"><table>
+        <thead><tr><th>Subject</th><th>Attendance</th><th>Present / Total</th></tr></thead>
+        <tbody>
+        {% for subject, item in subject_summaries %}
+            <tr>
+                <td>{{ subject }}</td>
+                <td><strong class="{% if item.percentage < 75 %}danger-text{% endif %}">{{ item.percentage }}%</strong>
+                    {% if item.total and item.percentage < 75 %}<span class="tag danger">Below 75%</span>{% endif %}
+                </td>
+                <td>{{ item.present }} / {{ item.total }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+    {% else %}<p class="muted">No attendance records yet.</p>{% endif %}
+</section>
+
+<section class="panel">
+    <h2>Attendance history</h2>
+    {% if records %}
+    <div class="table-wrap"><table>
+        <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for record in records %}
+            <tr>
+                <td>{{ record.attendance_date }}</td>
+                <td>{{ record.subject }}</td>
+                <td><span class="tag {% if record.status == 'Present' %}success{% else %}danger{% endif %}">{{ record.status }}</span></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+    {% else %}<p class="muted">Your attendance history will appear here.</p>{% endif %}
+</section>
+{% endblock %}
